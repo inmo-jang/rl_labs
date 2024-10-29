@@ -228,7 +228,7 @@ def main():
         # Initialise replay memory
         memory = ReplayMemory(replay_memory_size)
         # Initialise action-value function Q
-        state, _ = env.retry()
+        state, _ = env.reset()
         player_pos = env.get_player_pos()
         state_tensor = state_to_tensor(state, player_pos).to(device)        
         input_shape = state_tensor.squeeze(0).shape
