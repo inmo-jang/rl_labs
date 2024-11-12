@@ -4,3 +4,4 @@ argparse
 ipython
 gymnasium
 moviepy
+opencv-python
