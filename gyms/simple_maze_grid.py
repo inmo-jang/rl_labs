@@ -4,7 +4,7 @@ import pygame
 from gym import spaces
 import sys
 import argparse
-
+import os
 
 class SimpleMazeGrid:
     def __init__(self, n, k=None, m=None, render_option=False, random_seed=None, stochastic=False, epsilon=0.1, spec=None):
@@ -43,6 +43,16 @@ class SimpleMazeGrid:
             self.font = pygame.font.Font(None, 36)
                             # Draw the Q-values as text in the grid cells
             self.small_font = pygame.font.Font(None, 20)  # Smaller font size for Q-values
+            # --- Sprite for the agent ---
+            self.assets_dir = os.path.join(os.path.dirname(__file__), "assets")
+            self.agent_img = None
+            self.agent_img_scaled = None  # cache for a given cell_size
+
+            agent_path = os.path.join(self.assets_dir, "drone_sideview.png")
+            try:
+                self.agent_img = pygame.image.load(agent_path).convert_alpha()
+            except Exception as e:
+                print(f"[WARN] Failed to load agent image at {agent_path}: {e}. Falling back to circle.")
                         
         
     def reset(self, random_seed = None):
@@ -118,7 +128,30 @@ class SimpleMazeGrid:
         for pit in self.pits:
             state[pit[0], pit[1]] = 3
         return state
-    
+
+    def _get_scaled_agent(self, cell_size):
+        """Return a cached, smoothly scaled sprite that fits the current cell size."""
+        if self.agent_img is None:
+            return None
+        target = int(cell_size * 0.8)  # 셀 크기의 80%로 살짝 여유 있게
+        # 정사각형 스케일 (원본이 직사각형이면 비율 유지하고 싶은 경우 fit 로직으로 바꿔도 됨)
+        if (self.agent_img_scaled is None or
+            self.agent_img_scaled.get_width() != target or
+            self.agent_img_scaled.get_height() != target):
+            self.agent_img_scaled = pygame.transform.smoothscale(self.agent_img, (target, target))
+        return self.agent_img_scaled
+
+    def _blit_agent(self, row, col, cell_size):
+        """Center the agent sprite in the (row, col) cell. Fallback to circle if sprite missing."""
+        cx = col * cell_size + cell_size // 2
+        cy = row * cell_size + cell_size // 2
+        sprite = self._get_scaled_agent(cell_size)
+        if sprite is not None:
+            rect = sprite.get_rect(center=(cx, cy))
+            self.screen.blit(sprite, rect)
+        else:
+            pygame.draw.circle(self.screen, (0, 0, 255), (cx, cy), cell_size // 3)
+
     def render(self, fps = 30):
         self.screen.fill((255, 255, 255))
         cell_size = self.screen_width // self.n
@@ -133,8 +166,10 @@ class SimpleMazeGrid:
         for pit in self.pits:
             pygame.draw.rect(self.screen, (255, 0, 0), (pit[1] * cell_size, pit[0] * cell_size, cell_size, cell_size))
         
-        pygame.draw.circle(self.screen, (0, 0, 255), (self.player_pos[1] * cell_size + cell_size // 2, self.player_pos[0] * cell_size + cell_size // 2), cell_size // 3)
-        
+        # pygame.draw.circle(self.screen, (0, 0, 255), (self.player_pos[1] * cell_size + cell_size // 2, self.player_pos[0] * cell_size + cell_size // 2), cell_size // 3)
+        # Draw the agent sprite or fallback to circle
+        self._blit_agent(self.player_pos[0], self.player_pos[1], cell_size)      
+
         # Draw score board
         pygame.draw.rect(self.screen, (255, 255, 255), (self.screen_width, 0, self.info_width, self.screen_height))
         score_text = self.font.render(f"Return: {self.cumulative_reward}", True, (0, 0, 0))
@@ -270,8 +305,9 @@ class SimpleMazeGrid:
             pygame.draw.rect(self.screen, (255, 0, 0), (pit[1] * cell_size, pit[0] * cell_size, cell_size, cell_size))
         
         # Draw the player
-        pygame.draw.circle(self.screen, (0, 0, 255), (self.player_pos[1] * cell_size + cell_size // 2, self.player_pos[0] * cell_size + cell_size // 2), cell_size // 3)
-        
+        # pygame.draw.circle(self.screen, (0, 0, 255), (self.player_pos[1] * cell_size + cell_size // 2, self.player_pos[0] * cell_size + cell_size // 2), cell_size // 3)
+        self._blit_agent(self.player_pos[0], self.player_pos[1], cell_size)
+
         # Draw score board
         pygame.draw.rect(self.screen, (255, 255, 255), (self.screen_width, 0, self.info_width, self.screen_height))
         episode_number_text = self.font.render(f"Episode #: {episode_number}", True, (0, 0, 0))
@@ -318,7 +354,6 @@ class SimpleMazeGrid:
                         self.render()
                         print(f"state = \n{next_state}; \nreward = {reward}")
                     
-            self.clock.tick(10)
         
         self.close()
 
@@ -398,8 +433,10 @@ class SimpleMazeGrid:
         pygame.draw.rect(self.screen, (0, 255, 0), (self.goal_pos[1] * cell_size, self.goal_pos[0] * cell_size, cell_size, cell_size))
         for pit in self.pits:
             pygame.draw.rect(self.screen, (255, 0, 0), (pit[1] * cell_size, pit[0] * cell_size, cell_size, cell_size))
-        pygame.draw.circle(self.screen, (0, 0, 255), (self.player_pos[1] * cell_size + cell_size // 2, self.player_pos[0] * cell_size + cell_size // 2), cell_size // 3)
-        
+        # pygame.draw.circle(self.screen, (0, 0, 255), (self.player_pos[1] * cell_size + cell_size // 2, self.player_pos[0] * cell_size + cell_size // 2), cell_size // 3)
+        self._blit_agent(self.player_pos[0], self.player_pos[1], cell_size)
+
+
         pygame.draw.rect(self.screen, (255, 255, 255), (self.screen_width, 0, self.info_width, self.screen_height))
         iteration_text = self.font.render(f"Iteration #: {iteration_number}", True, (0, 0, 0))
         self.screen.blit(iteration_text, (self.screen_width + 10, 10))
