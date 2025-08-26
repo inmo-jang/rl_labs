@@ -5,7 +5,7 @@ sys.path.append(parent_dir)
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 
-from gyms.cartpole_pendulum import PendulumGym, CartPolePendulumEnv
+from gyms.cartpole_double_pendulum import SerialDoublePendulumGym, CartPoleSerialDoublePendulumEnv
 from dqn_utils import DQN, ReplayMemory, Transition
 import torch
 import torch.optim as optim
@@ -152,8 +152,12 @@ class RewardWrapper():
 
         # TODO: Implement your reward function        
         
+        position = next_state[0]        
         theta = next_state[2]
         theta_dot = next_state[3]
+        theta_two = next_state[4]
+        theta_two_dot = next_state[5]
+
         reward = 0.5*np.cos(theta) - 0.01*abs(theta_dot)**2
                        
         
@@ -162,7 +166,7 @@ class RewardWrapper():
     
     
 if __name__ == "__main__":
-    env = PendulumGym()
+    env = SerialDoublePendulumGym()
     wrapped_env = RewardWrapper(env)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     

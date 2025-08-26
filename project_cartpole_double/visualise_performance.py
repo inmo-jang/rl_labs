@@ -4,17 +4,13 @@ sys.path.append(parent_dir)
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 import torch
-from gyms.cartpole_pendulum import PendulumGym, CartPolePendulumEnv
+from gyms.cartpole_double_pendulum import SerialDoublePendulumGym, CartPoleSerialDoublePendulumEnv
 from dqn_utils import DQN
 import cv2
 import numpy as np
 
 class PerformanceChecker():
     def __init__(self, video_folder_path):
-        self.valid_theta = .20
-        self.valid_theta_dot = 1.0
-        self.degrade_factor = 2.0
-        self.valid_pos = 0.1
         self.video_folder_path = video_folder_path
         
 
@@ -57,7 +53,7 @@ class PerformanceChecker():
             cv2.putText(frame_rgb, text, (400, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1, cv2.LINE_AA)            
             
             # OpenCV로 텍스트 추가
-            text = f"[pos: {next_state[0]:.2f}, theta: {next_state[2]*180.0/np.pi:.1f}]"
+            text = f"[pos: {next_state[0]:.2f}, theta_1: {next_state[2]*180.0/np.pi:.1f}, theta_2: {next_state[4]*180.0/np.pi:.1f}]"
             cv2.putText(frame_rgb, text, (10, 350), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 1, cv2.LINE_AA)                      
 
             # VideoWriter에 프레임 추가
@@ -81,7 +77,7 @@ if __name__ == "__main__":
     video_folder_path = 'videos'
     performance_checker = PerformanceChecker(video_folder_path)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    env = PendulumGym(render_mode="rgb_array")
+    env = SerialDoublePendulumGym(render_mode="rgb_array")
     
     
 

@@ -1,8 +1,8 @@
-# Project: CartPole with Deep Q-Learning
+# Project: CartPole (Inverted Double Pendulumn) with Deep Q-Learning
 
-Welcome to the CartPole reinforcement learning project! In this assignment, you’ll explore the fundamentals of Deep Q-Networks (DQN) by training an agent to balance a pole on a cart. Your goal is to understand how the DQN algorithm works, experiment with different settings, design your own reward function, and analyze the agent’s performance over time.
+Welcome to the CartPole (Inverted Double Pendulumn) reinforcement learning project! In this assignment, you’ll explore the fundamentals of Deep Q-Networks (DQN) by training an agent to balance a pole on a cart. Your goal is to understand how the DQN algorithm works, experiment with different settings, design your own reward function, and analyze the agent’s performance over time.
 
-![CartPole Project](project_cartpole.gif)
+![CartPole Project](project_cartpole_double.gif)
 
 ## Project Structure
 
@@ -17,8 +17,8 @@ Welcome to the CartPole reinforcement learning project! In this assignment, you�
 
 ## How to Get Started
 
-1. **Train the Model**  
-   Start by running the `main_dqn.py` script. This will train the DQN agent in the CartPole environment. The script will automatically save training results (model weights and graphs) in the `results` folder.
+1. **Design and train the Model**  
+   Start by running the `main_dqn.py` script. This will train the DQN agent in the CartPole environment (this uses the DQN from `dqn_utils.py`, so you may need to design your own DQN model). The script will automatically save training results (model weights and graphs) in the `results` folder.
    ```bash
    python main_dqn.py
    ```
