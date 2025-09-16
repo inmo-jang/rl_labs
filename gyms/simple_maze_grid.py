@@ -7,7 +7,7 @@ import argparse
 import os
 
 class SimpleMazeGrid:
-    def __init__(self, n, k=None, m=None, render_option=False, random_seed=None, stochastic=False, epsilon=0.1, spec=None, reward=100):
+    def __init__(self, n, k=None, m=None, render_option=False, random_seed=None, stochastic=False, epsilon=0.1, spec=None, reward=10):
         self.n = n
         self.k = k
         self.m = m
