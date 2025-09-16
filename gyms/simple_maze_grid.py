@@ -7,7 +7,7 @@ import argparse
 import os
 
 class SimpleMazeGrid:
-    def __init__(self, n, k=None, m=None, render_option=False, random_seed=None, stochastic=False, epsilon=0.1, spec=None):
+    def __init__(self, n, k=None, m=None, render_option=False, random_seed=None, stochastic=False, epsilon=0.1, spec=None, reward=100):
         self.n = n
         self.k = k
         self.m = m
@@ -15,6 +15,7 @@ class SimpleMazeGrid:
         self.terminated = False
         self.stochastic = stochastic  # Stochastic option
         self.epsilon = epsilon  # Epsilon for stochastic behaviour        
+        self.reward = reward
         if random_seed is None and spec is not None:
             initial_player_pos, goal_pos, pits  = spec
             self.initial_player_pos = initial_player_pos # [x,y]
@@ -109,10 +110,10 @@ class SimpleMazeGrid:
         reward = -1
         self.terminated = False
         if self.player_pos == self.goal_pos:
-            reward = 100
+            reward = self.reward
             self.terminated = True
         elif self.player_pos in self.pits:
-            reward = -100
+            reward = -self.reward
             self.terminated = True
             
         self.cumulative_reward += reward
