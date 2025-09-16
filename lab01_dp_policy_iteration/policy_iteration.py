@@ -27,7 +27,12 @@ def policy_evaluation(env, policy, gamma=0.99, theta=1e-6):
             v = V[state_idx]
 
             # TODO: Implement the policy evaluation algorithm
-    
+
+
+        # NOTE: The following can be used to visualise this algorithm's process
+        # if env.render_option:
+        #     env.render_v_values(V, policy, 'Eval.')    
+
     return V
 
 def policy_improvement(env, V, gamma=0.99):
@@ -40,6 +45,10 @@ def policy_improvement(env, V, gamma=0.99):
             continue        
         # TODO: Implement the policy improvement algorithm        
     
+        # NOTE: The following can be used to visualise this algorithm's process
+        # if env.render_option:
+        #     env.render_v_values(V, policy, 'Imp.')  
+
     return policy
 
 def policy_iteration(env, gamma=0.99, theta=1e-6):
